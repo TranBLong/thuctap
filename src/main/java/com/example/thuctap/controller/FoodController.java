@@ -87,4 +87,44 @@ public class FoodController {
         return "Số lượng món ăn: " + list.size();
     }
 
+    //7. Sửa món ăn
+    @GetMapping("/edit")
+    public String showEditForm(@RequestParam("id") Integer id, Model model) {
+        Optional<Food> optionalFood = repo.findById(id);
+        if (optionalFood.isPresent()) {
+            model.addAttribute("food", optionalFood.get());
+            return "food/edit_food"; // file form sửa
+        } else {
+            return "redirect:/food"; // nếu không thấy thì quay lại danh sách
+        }
+    }
+
+    //8.Cập nhật món ăn
+    @PostMapping("/update")
+    public String updateFood(@ModelAttribute("food") Food food) {
+        repo.save(food); // cập nhật
+        return "redirect:/food";
+    }
+
+    //9. Xoá món ăn
+    @GetMapping("/delete")
+    public String deleteFoodByLink(@RequestParam("id") Integer id) {
+        repo.deleteById(id);
+        return "redirect:/food";
+    }
+
+    //10. Thêm món ăn
+    @GetMapping("/create")
+    public String showCreateForm(Model model) {
+        model.addAttribute("food", new Food()); // Tạo object rỗng cho form
+        return "food/create_food"; // tên file HTML chứa form thêm mới
+    }
+
+    //11. Lưu món ăn đã được thêm
+    @PostMapping("/save")
+    public String saveFood(@ModelAttribute("food") Food food) {
+        repo.save(food);
+        return "redirect:/food";
+    }
+
 }
