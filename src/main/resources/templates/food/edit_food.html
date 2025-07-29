@@ -20,8 +20,13 @@
                 </div>
 
                 <div class="mb-3">
+                    <label class="form-label">Số lượng</label>
+                    <input type="text" class="form-control" th:field="*{quantity}" required>
+                </div>
+
+                <div class="mb-3">
                     <label class="form-label">Giá</label>
-                    <input type="number" class="form-control" th:field="*{price}" min="0" step="1000" required>
+                    <input type="number" class="form-control" th:field="*{price}" required>
                 </div>
 
                 <div class="mb-3">

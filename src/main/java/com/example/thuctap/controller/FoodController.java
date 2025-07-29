@@ -22,14 +22,62 @@ public class FoodController {
     @Autowired
     private FoodService foodService;
 
+    @GetMapping
+    public String showProductList(
+            @RequestParam(name = "keyword", required = false) String keyword,
+            @RequestParam(name = "minPrice", required = false) Double minPrice,
+            @RequestParam(name = "maxPrice", required = false) Double maxPrice,
+            @RequestParam(name = "minQuantity", required = false) Integer minQuantity,
+            @RequestParam(name = "maxQuantity", required = false) Integer maxQuantity,
+            @RequestParam(name = "category", required = false) String category,
+            Model model) {
 
-    //1. Trả về danh sách thức ăn để hiển thị trên view
-    @GetMapping({"", "/"})
-    public String showProductList(Model model) {
         List<Food> foodsList = repo.findAll();
+
+        if (keyword != null && !keyword.isBlank()) {
+            foodsList = foodsList.stream()
+                    .filter(f -> f.getName().toLowerCase().contains(keyword.toLowerCase()))
+                    .toList();
+        }
+
+        if (minPrice != null) {
+            foodsList = foodsList.stream()
+                    .filter(f -> f.getPrice() >= minPrice)
+                    .toList();
+        }
+        if (maxPrice != null) {
+            foodsList = foodsList.stream()
+                    .filter(f -> f.getPrice() <= maxPrice)
+                    .toList();
+        }
+
+        if (minQuantity != null) {
+            foodsList = foodsList.stream()
+                    .filter(f -> f.getQuantity() >= minQuantity)
+                    .toList();
+        }
+        if (maxQuantity != null) {
+            foodsList = foodsList.stream()
+                    .filter(f -> f.getQuantity() <= maxQuantity)
+                    .toList();
+        }
+
+        // Lọc theo loại món
+        if (category != null && !category.isBlank()) {
+            foodsList = foodsList.stream()
+                    .filter(f -> f.getCategory() != null && f.getCategory().equalsIgnoreCase(category))
+                    .toList();
+        }
+
+        // Lấy danh sách loại món duy nhất
+        List<String> categoryList = repo.findAllDistinctCategories();
+        model.addAttribute("categoryList", categoryList);
+        model.addAttribute("selectedCategory", category); // để giữ selected
+
         model.addAttribute("foods", foodsList);
         return "food/food";
     }
+
 
     //2. API lấy chi tiết 1 món ăn theo ID
     @GetMapping("/{id}")
@@ -93,16 +141,16 @@ public class FoodController {
         Optional<Food> optionalFood = repo.findById(id);
         if (optionalFood.isPresent()) {
             model.addAttribute("food", optionalFood.get());
-            return "food/edit_food"; // file form sửa
+            return "food/edit_food";
         } else {
-            return "redirect:/food"; // nếu không thấy thì quay lại danh sách
+            return "redirect:/food";
         }
     }
 
-    //8.Cập nhật món ăn
+    //8. Cập nhật món ăn
     @PostMapping("/update")
     public String updateFood(@ModelAttribute("food") Food food) {
-        repo.save(food); // cập nhật
+        repo.save(food);
         return "redirect:/food";
     }
 
@@ -116,8 +164,8 @@ public class FoodController {
     //10. Thêm món ăn
     @GetMapping("/create")
     public String showCreateForm(Model model) {
-        model.addAttribute("food", new Food()); // Tạo object rỗng cho form
-        return "food/create_food"; // tên file HTML chứa form thêm mới
+        model.addAttribute("food", new Food());
+        return "food/create_food";
     }
 
     //11. Lưu món ăn đã được thêm
@@ -126,5 +174,4 @@ public class FoodController {
         repo.save(food);
         return "redirect:/food";
     }
-
 }

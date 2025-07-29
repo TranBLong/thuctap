@@ -13,9 +13,19 @@ public class Food {
     private String name;
     private String category;
     private double price;
+    private int quantity;
 
     @Column(columnDefinition = "TEXT")
     private String description;
+
+    public int getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
+    }
+
     private String imageFilename;
 
     public int getId() {

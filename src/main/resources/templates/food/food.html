@@ -12,7 +12,35 @@
     <h1 class="text-center my-4">📋 Danh sách món ăn</h1>
     <a class="btn btn-success mb-3" href="/food/create">
         <i class="bi bi-plus-circle"></i> Thêm món ăn
-    </a>
+    </a><form method="get" th:action="@{/food}" class="mb-3">
+
+    <input type="text" name="keyword" placeholder="Tìm món ăn..."
+           th:value="${param.keyword}" />
+
+    <input type="number" step="0.01" name="minPrice" placeholder="Giá tối thiểu"
+           th:value="${param.minPrice}" />
+
+    <input type="number" step="0.01" name="maxPrice" placeholder="Giá tối đa"
+           th:value="${param.maxPrice}" />
+
+    <input type="number" name="minQuantity" placeholder="Số lượng tối thiểu"
+           th:value="${param.minQuantity}" />
+
+    <input type="number" name="maxQuantity" placeholder="Số lượng tối đa"
+           th:value="${param.maxQuantity}" />
+
+    <label>Loại món:</label>
+    <select name="category">
+        <option value="">Tất cả</option>
+        <option th:each="c : ${categoryList}"
+                th:value="${c}"
+                th:text="${c}"
+                th:selected="${selectedCategory == c}">
+        </option>
+    </select>
+
+    <button type="submit">Lọc</button>
+</form>
 
     <table class="table table-bordered table-striped">
         <thead class="table-primary text-center">
@@ -20,6 +48,7 @@
             <th>ID</th>
             <th>Tên món</th>
             <th>Loại</th>
+            <th>Số lượng</th>
             <th>Giá</th>
             <th>Mô tả</th>
             <th>Hình ảnh</th>
@@ -31,6 +60,7 @@
             <td th:text="${food.id}">1</td>
             <td th:text="${food.name}">Tên món</td>
             <td th:text="${food.category}">Loại</td>
+            <td th:text="${food.quantity}">Số lượng</td>
             <td th:text="${#numbers.formatDecimal(food.price, 0, 'COMMA', 0, 'POINT')} + ' đ'">0 đ</td>
             <td th:text="${food.description}">Mô tả</td>
             <td class="text-center">
