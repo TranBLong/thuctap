@@ -1,15 +1,14 @@
 package com.example.thuctap.models;
 
 import jakarta.persistence.*;
-import java.util.Date;
 
 @Entity
-@Table(name="food")
-
+@Table(name = "food")
 public class Food {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
+
     private String name;
     private String category;
     private double price;
@@ -17,14 +16,6 @@ public class Food {
 
     @Column(columnDefinition = "TEXT")
     private String description;
-
-    public int getQuantity() {
-        return quantity;
-    }
-
-    public void setQuantity(int quantity) {
-        this.quantity = quantity;
-    }
 
     private String imageFilename;
 
@@ -60,6 +51,14 @@ public class Food {
         this.price = price;
     }
 
+    public int getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
+    }
+
     public String getDescription() {
         return description;
     }
@@ -75,4 +74,5 @@ public class Food {
     public void setImageFilename(String imageFilename) {
         this.imageFilename = imageFilename;
     }
+// Getters và Setters (bắt buộc cho JPA)
 }
