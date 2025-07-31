@@ -15,6 +15,11 @@ public class MenuServiceImpl implements MenuService {
     private MenuRepository menuRepository;
 
     @Override
+    public List<Menu> getMenusByCustomerId(int customerId) {
+        return menuRepository.findByCustomerId(customerId);
+    }
+
+    @Override
     public List<Menu> getAllMenus() {
         return menuRepository.findAll();
     }

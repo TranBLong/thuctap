@@ -11,6 +11,9 @@ public class Menu {
 
     private String name;
     private String description;
+    @ManyToOne
+    @JoinColumn(name = "customer_id")  // Cột foreign key trong bảng menu
+    private Customer customer;
 
     @ManyToMany
     @JoinTable(
@@ -19,6 +22,14 @@ public class Menu {
             inverseJoinColumns = @JoinColumn(name = "food_id")
     )
     private List<Food> foods;
+
+    public Customer getCustomer() {
+        return customer;
+    }
+
+    public void setCustomer(Customer customer) {
+        this.customer = customer;
+    }
 
     // Getters và Setters
     public Integer getId() { return id; }

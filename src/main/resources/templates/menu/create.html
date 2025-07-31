@@ -32,7 +32,9 @@
                         <input class="form-check-input" type="checkbox"
                                th:id="${'food_' + food.id}"
                                th:name="foodIds"
-                               th:value="${food.id}">
+                               th:value="${food.id}"
+                               th:attr="data-price=${food.price}">
+
                         <label class="form-check-label"
                                th:for="${'food_' + food.id}"
                                th:text="${food.name + ' - ' + food.price + 'đ'}"></label>

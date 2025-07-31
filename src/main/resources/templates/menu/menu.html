@@ -30,7 +30,9 @@
             <td th:text="${menu.description}"></td>
             <td>
                 <ul class="mb-0">
-                    <li th:each="food : ${menu.foods}" th:text="${food.name}"></li>
+                    <li th:each="food : ${menu.foods}"
+                        th:text="${food.name + ' - ' + #numbers.formatDecimal(food.price, 0, 0, 'COMMA') + 'đ'}"></li>
+
                 </ul>
             </td>
             <td class="text-nowrap">
