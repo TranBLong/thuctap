@@ -7,14 +7,13 @@ import java.util.List;
 public class Menu {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private int id;
 
     private String name;
     private String description;
     @ManyToOne
     @JoinColumn(name = "customer_id")  // Cột foreign key trong bảng menu
     private Customer customer;
-
     @ManyToMany
     @JoinTable(
             name = "menu_food",

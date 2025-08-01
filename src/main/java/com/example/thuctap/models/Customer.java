@@ -12,6 +12,12 @@ public class Customer {
     private String email;
     private String password;
 
+    public Customer() {}
+
+    public Customer(int id) {
+        this.id = id;
+    }
+
     // Getters and setters
     public int getId() { return id; }
     public void setId(int id) { this.id = id; }
