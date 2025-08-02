@@ -30,9 +30,10 @@
             <td th:text="${food.name}">Tên món</td>
             <td th:text="${#numbers.formatDecimal(food.price, 0, 0, 'COMMA')} + 'đ'">Giá</td>
             <td>
-                <form th:action="@{/cart/add}" method="post">
+                <form th:action="@{/auth/cart/add}" method="post">
                     <input type="hidden" name="customerId" th:value="${customer.id}" />
-                    <input type="hidden" name="foodId" th:value="${food.id}" />
+                    <input type="hidden" name="productId" th:value="${food.id}" />
+                    <input type="hidden" name="quantity" value="1" />
                     <button type="submit" class="btn btn-sm btn-success">🛒 Thêm vào giỏ</button>
                 </form>
             </td>

@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Giỏ hàng của bạn</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: 'Roboto', sans-serif;
+    }
+
+    body {
+      background-color: #f8f9fa;
+      margin: 0;
+      padding: 20px;
+    }
+
+    h2 {
+      color: #333;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background-color: #fff;
+      box-shadow: 0 0 8px rgba(0, 0, 0, 0.05);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    th, td {
+      padding: 15px;
+      text-align: center;
+    }
+
+    thead {
+      background-color: #007bff;
+      color: white;
+    }
+
+    tr:nth-child(even) {
+      background-color: #f2f2f2;
+    }
+
+    a {
+      text-decoration: none;
+      padding: 5px 10px;
+      background-color: #007bff;
+      color: white;
+      border-radius: 5px;
+      margin: 0 5px;
+    }
+
+    a:hover {
+      background-color: #0056b3;
+    }
+
+    button {
+      padding: 6px 12px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .btn {
+      background-color: #28a745;
+      color: white;
+    }
+
+    .btn:hover {
+      background-color: #218838;
+    }
+
+    .btn-danger {
+      background-color: #dc3545;
+      color: white;
+    }
+
+    .btn-danger:hover {
+      background-color: #c82333;
+    }
+
+    .btn-back {
+      background-color: #6c757d;
+      color: white;
+    }
+
+    .btn-back:hover {
+      background-color: #5a6268;
+    }
+
+    form {
+      display: inline;
+    }
+
+    .action-buttons {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .total {
+      font-weight: bold;
+      font-size: 18px;
+      text-align: right;
+      margin-top: 20px;
+    }
+
+  </style>
+</head>
+<body>
+<h2>🛒 Giỏ hàng của bạn</h2>
+
+<table>
+  <thead>
+  <tr>
+    <th>Tên món</th>
+    <th>Giá</th>
+    <th>Số lượng</th>
+    <th>Thành tiền</th>
+    <th>Hành động</th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr th:each="item : ${cartItems}">
+    <td th:text="${item.food.name}">Tên món</td>
+    <td th:text="${#numbers.formatDecimal(item.food.price, 0, 0, 'COMMA')} + 'đ'">0đ</td>
+    <td class="action-buttons">
+      <a th:href="@{/cart/update(customerId=${customerId}, foodId=${item.food.id}, action='decrease')}">−</a>
+      <span th:text="${item.quantity}"></span>
+      <a th:href="@{/cart/update(customerId=${customerId}, foodId=${item.food.id}, action='increase')}">+</a>
+    </td>
+    <td th:text="${#numbers.formatDecimal(item.food.price * item.quantity, 0, 0, 'COMMA')} + 'đ'">0đ</td>
+    <td>
+      <form th:action="@{/cart/remove}" method="post">
+        <input type="hidden" name="customerId" th:value="${customerId}" />
+        <input type="hidden" name="foodId" th:value="${item.food.id}" />
+        <button type="submit" class="btn-danger">Xóa</button>
+      </form>
+    </td>
+  </tr>
+  </tbody>
+</table>
+
+<br>
+
+<form th:action="@{/cart/checkout}" method="get">
+  <input type="hidden" name="customerId" th:value="${customerId}" />
+  <button type="submit" class="btn">✅ Thanh toán</button>
+</form>
+
+<br><br>
+
+<a th:href="@{'/auth/customer/profile/' + ${customerId}}" class="btn-back">🔙 Quay lại</a>
+</body>
+</html>

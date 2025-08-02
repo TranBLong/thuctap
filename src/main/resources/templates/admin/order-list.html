@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Danh sách đơn hàng</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .order {
+            border: 1px solid #ccc;
+            padding: 12px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+        }
+        .order h3 {
+            margin-top: 0;
+        }
+        .items-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        .items-table th, .items-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+        }
+        .items-table th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+<h1>Danh sách đơn hàng của khách</h1>
+
+<div th:each="order : ${orders}" class="order">
+    <h3>Đơn hàng #<span th:text="${order.orderId}"></span></h3>
+    <p><strong>ID Khách hàng:</strong> <span th:text="${order.customerId}"></span></p>
+    <p><strong>Thời gian đặt:</strong> <span th:text="${order.orderTime}"></span></p>
+    <p><strong>Tổng tiền:</strong> <span th:text="${order.totalAmount} + ' đ'"></span></p>
+
+    <table class="items-table">
+        <thead>
+        <tr>
+            <th>Mã đơn</th>
+            <th>Tên khách</th> <!-- 👈 -->
+            <th>Thời gian đặt</th>
+            <th>Tổng tiền</th>
+            <th>Chi tiết</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="order : ${orders}">
+            <td th:text="${order.orderId}"></td>
+            <td th:text="${order.customerName}"></td> <!-- 👈 -->
+            <td th:text="${order.orderTime}"></td>
+            <td th:text="${order.totalAmount} + ' đ'"></td>
+            <td>
+                <a th:href="@{'/admin/orders/' + ${order.orderId}}">Xem</a>
+            </td>
+        </tr>
+        </tbody>
+
+    </table>
+</div>
+
+</body>
+</html>

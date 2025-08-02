@@ -4,6 +4,7 @@ import com.example.thuctap.models.Customer;
 import com.example.thuctap.models.CustomerLoginRequest;
 import com.example.thuctap.models.CustomerRegisterRequest;
 import com.example.thuctap.models.Menu;
+import com.example.thuctap.service.CartService;
 import com.example.thuctap.service.CustomerService;
 import com.example.thuctap.service.MenuService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +23,9 @@ public class CustomerViewController {
 
     @Autowired
     private MenuService menuService;
+
+    @Autowired
+    private CartService cartService;
 
     // Hiển thị form đăng ký
     @GetMapping("/signup")
@@ -65,4 +69,13 @@ public class CustomerViewController {
         model.addAttribute("menus", menus);
         return "customer/profile"; // đường dẫn tới template
     }
+
+    @PostMapping("/cart/add")
+    public String addToCart(@RequestParam int customerId,
+                            @RequestParam int productId,
+                            @RequestParam int quantity) {
+        cartService.addItemToCart(customerId, productId, quantity);
+        return "redirect:/cart/view/" + customerId;
+    }
+
 }

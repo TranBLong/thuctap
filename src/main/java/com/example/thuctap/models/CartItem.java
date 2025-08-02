@@ -2,38 +2,42 @@ package com.example.thuctap.models;
 
 import jakarta.persistence.*;
 
-import java.util.ArrayList;
-// CartItem.java
 @Entity
+@Table(name = "cart_items")
 public class CartItem {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
     @ManyToOne
-    private Menu menuItem;
+    private Customer customer;
 
     private int quantity;
 
-    private Double price; // quantity * menuItem.price
+    @ManyToOne
+    @JoinColumn(name = "food_id")
+    private Food food;
 
     @ManyToOne
+    @JoinColumn(name = "cart_id")
     private Cart cart;
 
+    public Customer getCustomer() {
+        return customer;
+    }
+
+    public void setCustomer(Customer customer) {
+        this.customer = customer;
+    }
+
+    // Getter và Setter
     public int getId() {
         return id;
     }
 
     public void setId(int id) {
         this.id = id;
-    }
-
-    public Menu getMenuItem() {
-        return menuItem;
-    }
-
-    public void setMenuItem(Menu menuItem) {
-        this.menuItem = menuItem;
     }
 
     public int getQuantity() {
@@ -44,12 +48,12 @@ public class CartItem {
         this.quantity = quantity;
     }
 
-    public Double getPrice() {
-        return price;
+    public Food getFood() {
+        return food;
     }
 
-    public void setPrice(Double price) {
-        this.price = price;
+    public void setFood(Food food) {
+        this.food = food;
     }
 
     public Cart getCart() {
@@ -59,5 +63,4 @@ public class CartItem {
     public void setCart(Cart cart) {
         this.cart = cart;
     }
-// Getter, Setter
 }

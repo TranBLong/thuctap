@@ -2,68 +2,118 @@ package com.example.thuctap.service;
 
 import com.example.thuctap.models.Cart;
 import com.example.thuctap.models.CartItem;
-import com.example.thuctap.models.Customer;
-import com.example.thuctap.models.Menu;
+import com.example.thuctap.models.Food;
 import com.example.thuctap.repository.CartItemRepository;
 import com.example.thuctap.repository.CartRepository;
-import com.example.thuctap.repository.MenuRepository;
+import com.example.thuctap.repository.FoodRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.util.*;
+
 @Service
 public class CartService {
-    @Autowired private CartRepository cartRepository;
+
+    private Map<Integer, List<CartItem>> cart = new HashMap<>();
+
+    @Autowired
+    private CartRepository cartRepository;
+
     @Autowired
     private CartItemRepository cartItemRepository;
-    @Autowired private MenuRepository menuRepository;
 
-    public Cart getCartByCustomerId(int customerId) {
-        return cartRepository.findByCustomer_Id(customerId).orElseGet(() -> {
-            Cart cart = new Cart();
-            cart.setCustomer(new Customer(customerId));
-            return cartRepository.save(cart);
-        });
+    @Autowired
+    private FoodRepository foodRepository;
+
+    public Cart getOrCreateCart(int customerId) {
+        return cartRepository.findByCustomerId(customerId)
+                .orElseGet(() -> {
+                    Cart newCart = new Cart();
+                    newCart.setCustomerId(customerId);
+                    newCart.setItems(new ArrayList<>()); // đảm bảo có danh sách rỗng
+                    return cartRepository.save(newCart); // lưu luôn vào DB
+                });
     }
 
-    public Cart addItemToCart(int customerId, int menuId, int quantity) {
-        Cart cart = getCartByCustomerId(customerId);
-        Menu menu = menuRepository.findById(menuId)
-                .orElseThrow(() -> new RuntimeException("Món ăn không tồn tại"));
+    public BigDecimal getTotalAmount(Cart cart) {
+        return cart.getItems().stream()
+                .map(item -> BigDecimal.valueOf(item.getFood().getPrice())
+                        .multiply(BigDecimal.valueOf(item.getQuantity())))
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
 
-        // ✅ Tính tổng giá món ăn trong menu
-        double menuPrice = 0;
-        for (var food : menu.getFoods()) {
-            menuPrice += food.getPrice();
+
+    public Cart addItemToCart(int customerId, int foodId, int quantity) {
+        Cart cart = getOrCreateCart(customerId);
+
+        Optional<CartItem> existingItem = cart.getItems().stream()
+                .filter(item -> item.getFood().getId() == foodId)
+                .findFirst();
+
+        if (existingItem.isPresent()) {
+            CartItem item = existingItem.get();
+            item.setQuantity(item.getQuantity() + quantity);
+        } else {
+            Food food = foodRepository.findById(foodId)
+                    .orElseThrow(() -> new RuntimeException("Food not found"));
+
+            CartItem newItem = new CartItem();
+            newItem.setCart(cart);
+            newItem.setFood(food);
+            newItem.setQuantity(quantity);
+            cart.getItems().add(newItem);
         }
 
-        CartItem item = new CartItem();
-        item.setMenuItem(menu);
-        item.setQuantity(quantity);
-        item.setPrice(menuPrice * quantity); // ✅ Gán giá cho item
-        item.setCart(cart);
+        return cartRepository.save(cart);
+    }
 
-        cart.getItems().add(item);
-        cart.setTotalPrice(cart.getTotalPrice() + item.getPrice());
+    public List<CartItem> getCartItems(int customerId) {
+        Cart cart = getOrCreateCart(customerId);
+        return cart.getItems();
+    }
 
+    public void increaseQuantity(int customerId, int foodId) {
+        Cart cart = getOrCreateCart(customerId);
+        for (CartItem item : cart.getItems()) {
+            if (item.getFood().getId() == foodId) {
+                item.setQuantity(item.getQuantity() + 1);
+                break;
+            }
+        }
         cartRepository.save(cart);
-        return cart;
     }
 
-
-    public Cart removeItem(int cartItemId) {
-        CartItem item = cartItemRepository.findById(cartItemId)
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy mục"));
-        Cart cart = item.getCart();
-        cart.setTotalPrice(cart.getTotalPrice() - item.getPrice());
-        cart.getItems().remove(item);
-        cartItemRepository.delete(item);
-        return cartRepository.save(cart);
+    public void decreaseQuantity(int customerId, int foodId) {
+        Cart cart = getOrCreateCart(customerId);
+        cart.getItems().removeIf(item -> {
+            if (item.getFood().getId() == foodId) {
+                int newQty = item.getQuantity() - 1;
+                if (newQty <= 0) {
+                    return true; // xóa luôn nếu về 0
+                } else {
+                    item.setQuantity(newQty);
+                }
+            }
+            return false;
+        });
+        cartRepository.save(cart);
     }
 
-    public Cart clearCart(int customerId) {
-        Cart cart = getCartByCustomerId(customerId);
-        cart.getItems().clear();
-        cart.setTotalPrice(0.0);
-        return cartRepository.save(cart);
+    public void removeItem(int customerId, int foodId) {
+        Cart cart = getOrCreateCart(customerId);
+        cart.getItems().removeIf(item -> item.getFood().getId() == foodId);
+        cartRepository.save(cart);
     }
+
+    public double calculateTotal(Cart cart) {
+        return cart.getItems().stream()
+                .mapToDouble(item -> item.getFood().getPrice() * item.getQuantity())
+                .sum();
+    }
+
+    public void saveCart(Cart cart) {
+        cartRepository.save(cart);
+    }
+
 }

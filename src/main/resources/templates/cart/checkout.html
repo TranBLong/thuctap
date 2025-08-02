@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Thanh toán</title>
+</head>
+<body>
+<h1>Trang thanh toán</h1>
+<p>Khách hàng ID: <span th:text="${cart.customerId}"></span></p>
+
+<ul>
+    <li th:each="item : ${cart.items}">
+        <span th:text="${item.food.name}"></span> -
+        <span th:text="${item.quantity}"></span> x
+        <span th:text="${item.food.price} + 'đ'"></span>
+    </li>
+</ul>
+
+<p><strong>Tổng tiền:</strong>
+    <span th:text="${totalAmount} + 'đ'"></span>
+</p>
+
+</body>
+</html>

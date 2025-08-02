@@ -1,25 +1,23 @@
 package com.example.thuctap.models;
 
 import jakarta.persistence.*;
+import jakarta.persistence.Id; // ✅ ĐÚNG
 
 import java.util.ArrayList;
 import java.util.List;
 
-// Cart.java
 @Entity
 public class Cart {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @OneToOne
-    private Customer customer;
+    private int customerId;
 
-    @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<CartItem> items = new ArrayList<>();
 
-    private Double totalPrice = 0.0;
-
+    // --- Getters and Setters ---
     public int getId() {
         return id;
     }
@@ -28,12 +26,12 @@ public class Cart {
         this.id = id;
     }
 
-    public Customer getCustomer() {
-        return customer;
+    public int getCustomerId() {
+        return customerId;
     }
 
-    public void setCustomer(Customer customer) {
-        this.customer = customer;
+    public void setCustomerId(int customerId) {
+        this.customerId = customerId;
     }
 
     public List<CartItem> getItems() {
@@ -43,13 +41,5 @@ public class Cart {
     public void setItems(List<CartItem> items) {
         this.items = items;
     }
-
-    public Double getTotalPrice() {
-        return totalPrice;
-    }
-
-    public void setTotalPrice(Double totalPrice) {
-        this.totalPrice = totalPrice;
-    }
-// Getter, Setter
 }
+

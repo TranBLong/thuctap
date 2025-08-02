@@ -24,6 +24,7 @@
     <table class="table table-bordered table-striped">
         <thead class="table-primary text-center">
         <tr>
+            <th>ID</th>
             <th>Họ tên</th>
             <th>Email</th>
             <th>Hành động</th>
@@ -31,6 +32,7 @@
         </thead>
         <tbody>
         <tr th:each="user : ${users}">
+            <td th:text="${user.id}">ID</td>
             <td th:text="${user.fullName}">Họ tên</td>
             <td th:text="${user.email}">Email</td>
             <td class="text-center" style="white-space: nowrap">
